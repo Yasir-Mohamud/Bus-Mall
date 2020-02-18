@@ -1,0 +1,23 @@
+#one {
+  width: 400px;
+  height: 400px;
+  margin: 0px 150px;
+  margin-top: 100px;
+}
+#two {
+  width: 400px;
+  height: 400px;
+  margin: 0px 100px;
+  margin-top: 100px;
+}
+#three {
+  width: 400px;
+  height: 400px;
+  margin: 0px 100px;
+  margin-top: 100px;
+}
+
+#results {
+ font-size: 26pt;
+
+}
