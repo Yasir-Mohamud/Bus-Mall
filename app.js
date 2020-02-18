@@ -52,23 +52,27 @@ function getRandom (image) {
   var randomIndex = Math.floor(Math.random() * image.length);
   return image[randomIndex];
 }
-
+// renders images
 function render () {
-  one.setAttribute('src', getRandom(imageOne).pathOfImage);
-  one.setAttribute('alt', getRandom(imageOne).name);
-  getRandom(imageOne).timesrendered++;
-  two.setAttribute('src', getRandom(imageTwo).pathOfImage);
-  two.setAttribute('alt', getRandom(imageTwo).name);
-  getRandom(imageTwo).timesrendered++;
-  three.setAttribute('src', getRandom(imageThree).pathOfImage);
-  three.setAttribute('alt', getRandom(imageThree).name);
-  getRandom(imageThree).timesrendered++;
+  var randomImageOne = getRandom(imageOne);
+  one.setAttribute('src', randomImageOne.pathOfImage);
+  one.setAttribute('alt', randomImageOne.name);
+  randomImageOne.timesrendered++;
+  var randomImageTwo = getRandom(imageTwo);
+  two.setAttribute('src', randomImageTwo.pathOfImage);
+  two.setAttribute('alt', randomImageTwo.name);
+  randomImageTwo.timesrendered++;
+  var randomImageThree = getRandom(imageThree);
+  three.setAttribute('src', randomImageThree.pathOfImage);
+  three.setAttribute('alt', randomImageThree.name);
+  randomImageThree.timesrendered++;
 }
 
 
 
 function handleImageClick (event) {
   var id = event.target.getAttribute('alt');
+  // code stops after user clicks 25 times
   if (totalClicks < 25 ) {
     totalClicks++;
     for (var i = 0; i < imageOne.length; i++) {
@@ -94,7 +98,7 @@ function handleImageClick (event) {
   } else {
     alert('Thank You for your input');
     endOfSurvey();
-
+    chartResults();
   }
 
   console.log('best' + bestProducts);
@@ -116,17 +120,109 @@ if (totalClicks < 25) {
   }
 }
 
+// function removeDuplicates(arr) {
+//   var result = [];
+//   for (var i = 0; i < arr.length; i++) {
+//     var dup = false;
+//     for (var j = 0; j < results.length; j++) {
+//       if (result[j] === arr[i]) {
+//         dup = true;
+//       }
+//     }
+//     if (!dup) {
+//       results.push(arr[i]);
+//     }
+//   }
+//   return results;
+// }
 
+// lists all the products that where clicked on
 function endOfSurvey () {
-  // var list = document.createElement('li');
-  for(var i = 0; i < bestProducts.length;i++){
-    var list = document.createElement('li');
-    for(var j = 0; j < allProducts.length;j++){
-      if(bestProducts[i] === allProducts[j].name)
-        list.textContent = (allProducts[j].name + ' had ' + allProducts[j].timesClicked + ' and was shown ' + allProducts[j].timesrendered + ' times.' );
-      results.appendChild(list);
+  let orderedArr = bestProducts.reduce(function(accumulator,currentValue) {
+    if (accumulator.indexOf(currentValue) === -1 ) {
+      accumulator.push(currentValue);
     }
-
+    return accumulator;
+  }, [] );
+  for(var i = 0; i < orderedArr.length;i++){
+    var list = document.createElement('li');
+    results.appendChild(list);
+    for(var j = 0; j < allProducts.length;j++){
+      if(orderedArr[i] === allProducts[j].name) {
+        list.textContent = (allProducts[j].name + ' had ' + allProducts[j].timesClicked + ' clicks and was shown ' + allProducts[j].timesrendered + ' times.' );
+      }
+    }
   }
+}
+
+// label names for the chart
+function chartNames () {
+  var names = [];
+  for (var i = 0; i < allProducts.length ; i++) {
+    names.push( allProducts[i].name);
+  }
+  return names;
+}
+//Data of number of clicks for the chart
+function chartClickData () {
+  var data = [];
+  for (var i = 0; i < allProducts.length ; i++) {
+    data.push(allProducts[i].timesClicked);
+  }
+  return data;
+}
+//data of times rendered for chart
+function chartRenderedData () {
+  var data = [];
+  for (var i = 0; i < allProducts.length ; i++) {
+    data.push(allProducts[i].timesrendered);
+  }
+  return data;
+
+}
+// repeats background colors fot the chart
+function repeatColor (color) {
+  var repeat = 0;
+  do {
+    repeat++;
+    return color;
+  } while(repeat < 20);
+
+}
+var red = 'rgba(255, 99, 132, 0.2)';
+var blue =  'rgba(54, 162, 235, 1)';
+
+//creates results chart
+function chartResults () {
+  var canvas = document.getElementById('clicks');
+  var ctx = canvas.getContext('2d');
+  timesClickedChart = new Chart (ctx , {
+    type: 'bar',
+    data: {
+      labels: chartNames(),
+      datasets: [{
+        label: '# of times clicked',
+        data: chartClickData(),
+        backgroundColor: repeatColor (red) ,
+        borderColor: repeatColor (red) ,
+        borderWidth: 1
+      },{
+        label: '# of times rendered',
+        data: chartRenderedData(),
+        backgroundColor: repeatColor(blue),
+        borderColor: repeatColor(blue),
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
 
 }
