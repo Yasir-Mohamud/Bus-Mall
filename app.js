@@ -7,7 +7,6 @@ var one = document.getElementById('one');
 var two = document.getElementById('two');
 var three = document.getElementById('three');
 var totalClicks = 0;
-var bestProducts = [];
 var results = document.getElementById('results');
 // var totalclicks = 0;
 // constuctor function for products
@@ -20,38 +19,68 @@ function Product (name,pathOfImage) {
 
 }
 // products
-var bag = new Product ('Bag' ,'images/images/bag.jpg');
-var banana = new Product ('Banana','images/images/banana.jpg');
-var bathroom = new Product ('Bathroom','images/images/bathroom.jpg');
-var boots = new Product ('Boots','images/images/boots.jpg');
-var breakfast = new Product ('Breakfast','images/images/breakfast.jpg');
-var bubblegum = new Product ('Bubblegum','images/images/bubblegum.jpg');
-var chair = new Product ('Chair','images/images/chair.jpg');
-var cthulhu = new Product ('Cthulhu','images/images/cthulhu.jpg');
-var dog_duck = new Product ('Dog-duck','images/images/dog-duck.jpg');
-var dragon = new Product ('Dragon','images/images/dragon.jpg');
-var pen = new Product ('Pen','images/images/pen.jpg');
-var pet_sweep = new Product ('Pet-sweep','images/images/pet-sweep.jpg');
-var scissors = new Product ('Scissors','images/images/scissors.jpg');
-var shark = new Product ('Shark','images/images/scissors.jpg');
-var sweep = new Product ('Sweep','images/images/sweep.png');
-var tauntaun = new Product ('Tauntaun','images/images/tauntaun.jpg');
-var unicorn = new Product ('Unicorn','images/images/unicorn.jpg');
-var usb = new Product ('Usb','images/images/usb.gif');
-var water_can = new Product ('Water-can','images/images/water-can.jpg');
-var wine_glass = new Product ('Wine-glass','images/images/wine-glass.jpg');
+// var bag = new Product ('Bag' ,'images/images/bag.jpg');
+// var banana = new Product ('Banana','images/images/banana.jpg');
+// var bathroom = new Product ('Bathroom','images/images/bathroom.jpg');
+// var boots = new Product ('Boots','images/images/boots.jpg');
+// var breakfast = new Product ('Breakfast','images/images/breakfast.jpg');
+// var bubblegum = new Product ('Bubblegum','images/images/bubblegum.jpg');
+// var chair = new Product ('Chair','images/images/chair.jpg');
+// var cthulhu = new Product ('Cthulhu','images/images/cthulhu.jpg');
+// var dog_duck = new Product ('Dog-duck','images/images/dog-duck.jpg');
+// var dragon = new Product ('Dragon','images/images/dragon.jpg');
+// var pen = new Product ('Pen','images/images/pen.jpg');
+// var pet_sweep = new Product ('Pet-sweep','images/images/pet-sweep.jpg');
+// var scissors = new Product ('Scissors','images/images/scissors.jpg');
+// var shark = new Product ('Shark','images/images/scissors.jpg');
+// var sweep = new Product ('Sweep','images/images/sweep.png');
+// var tauntaun = new Product ('Tauntaun','images/images/tauntaun.jpg');
+// var unicorn = new Product ('Unicorn','images/images/unicorn.jpg');
+// var usb = new Product ('Usb','images/images/usb.gif');
+// var water_can = new Product ('Water-can','images/images/water-can.jpg');
+// var wine_glass = new Product ('Wine-glass','images/images/wine-glass.jpg');
+if (!localStorage.Product) {
+  var bag = new Product ('Bag' ,'images/images/bag.jpg');
+  var banana = new Product ('Banana','images/images/banana.jpg');
+  var bathroom = new Product ('Bathroom','images/images/bathroom.jpg');
+  var boots = new Product ('Boots','images/images/boots.jpg');
+  var breakfast = new Product ('Breakfast','images/images/breakfast.jpg');
+  var bubblegum = new Product ('Bubblegum','images/images/bubblegum.jpg');
+  var chair = new Product ('Chair','images/images/chair.jpg');
+  var cthulhu = new Product ('Cthulhu','images/images/cthulhu.jpg');
+  var dog_duck = new Product ('Dog-duck','images/images/dog-duck.jpg');
+  var dragon = new Product ('Dragon','images/images/dragon.jpg');
+  var pen = new Product ('Pen','images/images/pen.jpg');
+  var pet_sweep = new Product ('Pet-sweep','images/images/pet-sweep.jpg');
+  var scissors = new Product ('Scissors','images/images/scissors.jpg');
+  var shark = new Product ('Shark','images/images/scissors.jpg');
+  var sweep = new Product ('Sweep','images/images/sweep.png');
+  var tauntaun = new Product ('Tauntaun','images/images/tauntaun.jpg');
+  var unicorn = new Product ('Unicorn','images/images/unicorn.jpg');
+  var usb = new Product ('Usb','images/images/usb.gif');
+  var water_can = new Product ('Water-can','images/images/water-can.jpg');
+  var wine_glass = new Product ('Wine-glass','images/images/wine-glass.jpg');
 
-
+} else {
+  var storageData = fetchProductData('product');
+  for(var i = 0; i < storageData.length;i++) {
+    var existingProduct = new Product(storageData[i].name, storageData[i].image);
+    existingProduct.timesClicked += storageData[i].timesClicked;
+    existingProduct.timesrendered += storageData[i].timesrendered;
+  }
+};
 
 imageOne.push(bag, banana , bathroom, boots,breakfast, bubblegum);
 imageTwo.push(chair,cthulhu,dog_duck,dragon,pen,pet_sweep,scissors);
 imageThree.push(shark,sweep,tauntaun,unicorn,usb,water_can,wine_glass);
 
+/////////// creates random nuber for image index /////////////////////////
 function getRandom (image) {
   var randomIndex = Math.floor(Math.random() * image.length);
   return image[randomIndex];
 }
-// renders images
+
+//////////////// renders images ///////////////////////
 function render () {
   var randomImageOne = getRandom(imageOne);
   one.setAttribute('src', randomImageOne.pathOfImage);
@@ -66,19 +95,20 @@ function render () {
   three.setAttribute('alt', randomImageThree.name);
   randomImageThree.timesrendered++;
 }
-// sets data to the local storage
+
+// ///////////////// sets data to the local storage ////////////////////////
 function setProductData (key,data) {
   var turnsToString = JSON.stringify(data);
   localStorage.setItem(key , turnsToString);
 }
-// get data from the loval storage
+
+////////// get data from the loval storage ////////////////////////////
 function fetchProductData (key) {
   var productData = localStorage.getItem(key);
   return JSON.parse(productData);
 }
 
-
-
+////////// creates handleclick function for event listner /////////////////
 function handleImageClick (event) {
   event.preventDefault();
   var id = event.target.getAttribute('alt');
@@ -88,73 +118,46 @@ function handleImageClick (event) {
     for (var i = 0; i < imageOne.length; i++) {
       if(id === imageOne[i].name) {
         imageOne[i].timesClicked++ ;
-        bestProducts.push(id);
       }
     }
     for (var j = 0; j < imageTwo.length; j++) {
       if (id === imageTwo[j].name) {
         imageTwo[j].timesClicked++ ;
-        bestProducts.push(id);
-
       }
     }
     for (var k = 0; k < imageThree.length; k++) {
       if (id === imageThree[k].name) {
         imageThree[k].timesClicked++ ;
-        bestProducts.push(id);
       }
     }
-    setProductData('product',allProducts);
-    
+
+
     render();
   } else {
     alert('Thank You for your input');
+    one.removeEventListener('click',handleImageClick);
+    two.removeEventListener('click',handleImageClick);
+    three.removeEventListener('click',handleImageClick);
     endOfSurvey();
-    gameStart()
+    setProductData('product',allProducts);
     chartResults();
   }
 
 
-  console.log(gameStart());
-  console.log(fetchProductData('product'));
 }
 
 
-if (totalClicks < 25) {
-  totalClicks++;
-  one.addEventListener('click',handleImageClick);
-  two.addEventListener('click',handleImageClick);
-  three.addEventListener('click',handleImageClick);
-  render();
-  // gameStart();
-} else {
-  prompt('again?');
-  if(prompt === 'yes') {
-    totalClicks -= 25;
-  }
-}
+/////////// ebent listeners for images being rendered into the DOM ///////////////
+one.addEventListener('click',handleImageClick);
+two.addEventListener('click',handleImageClick);
+three.addEventListener('click',handleImageClick);
+render();
 
 //Game starts
 
 //If there is data in the localStorage, push that into your products array
 
-function gameStart() {
 
-  var storageData = fetchProductData('product');
-
-  if (storageData.length > 0){
-
-    for(var i = 0; i < storageData.length;i++) {
-      var existingProduct = new Product(storageData[i].name, storageData[i].image);
-    }
-    existingProduct.timesClicked += storageData.timesClicked;
-    existingProduct.timesrendered += storageData.timesrendered;
-    // storageData[0].timesClicked;
-  } else {
-    return allProducts
-  }
-
-}
 
 //If there isn't, write products as normal.
 
@@ -193,6 +196,8 @@ function gameStart() {
 //     }
 //   }
 // }
+
+//////// creates result list of products after the 25 clicks /////////////////
 function endOfSurvey () {
   for(var i = 0; i < allProducts.length;i++) {
     var list = document.createElement('li');
@@ -207,7 +212,7 @@ function endOfSurvey () {
 
 
 
-// label names for the chart
+/////////// label names for the chart ///////////////
 function chartNames () {
   var names = [];
   for (var i = 0; i < allProducts.length ; i++) {
@@ -215,7 +220,8 @@ function chartNames () {
   }
   return names;
 }
-//Data of number of clicks for the chart
+
+////////Data of number of clicks for the chart //////////
 function chartClickData () {
   var data = [];
   for (var i = 0; i < allProducts.length ; i++) {
@@ -223,7 +229,8 @@ function chartClickData () {
   }
   return data;
 }
-//data of times rendered for chart
+
+//////////// data of times rendered for chart ///////////////
 function chartRenderedData () {
   var data = [];
   for (var i = 0; i < allProducts.length ; i++) {
@@ -232,7 +239,7 @@ function chartRenderedData () {
   return data;
 
 }
-// repeats background colors fot the chart
+//////// repeats background colors fot the chart /////////////////
 function repeatColor (color) {
   var repeat = 0;
   do {
@@ -244,11 +251,11 @@ function repeatColor (color) {
 var red = 'rgba(255, 99, 132, 0.2)';
 var blue =  'rgba(54, 162, 235, 1)';
 
-//creates results chart
+//////////////  creates results chart ///////////////
 function chartResults () {
   var canvas = document.getElementById('clicks');
   var ctx = canvas.getContext('2d');
-  timesClickedChart = new Chart (ctx , {
+  new Chart (ctx , {
     type: 'bar',
     data: {
       labels: chartNames(),
@@ -278,3 +285,4 @@ function chartResults () {
   });
 
 }
+
