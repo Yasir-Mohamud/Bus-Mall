@@ -1,5 +1,5 @@
 'use strict';
-var allProducts = [];
+var allProducts = [] ;// either empty if localStorage is null, or our localStorage object
 var imageOne = [];
 var imageTwo = [];
 var imageThree = [];
@@ -16,10 +16,12 @@ function Product (name,pathOfImage) {
   this.pathOfImage = pathOfImage;
   this.timesClicked = 0;
   this.timesrendered = 0;
+  this.best = [];
   allProducts.push(this);
 
 }
-// products
+
+// products, this will intialize our array with fresh products, if local storage has products saved, when do we need to initialize?
 var bag = new Product ('Bag' ,'images/images/bag.jpg');
 var banana = new Product ('Banana','images/images/banana.jpg');
 var bathroom = new Product ('Bathroom','images/images/bathroom.jpg');
@@ -69,15 +71,13 @@ function render () {
 // sets data to the local storage
 function setProductData (key,data) {
   var turnsToString = JSON.stringify(data);
-  localStorage.setItem(key , turnsToString);
+  localStorage.setItem(key,turnsToString);
 }
 // get data from the loval storage
 function fetchProductData (key) {
   var productData = localStorage.getItem(key);
   return JSON.parse(productData);
 }
-
-
 
 function handleImageClick (event) {
   event.preventDefault();
@@ -104,20 +104,19 @@ function handleImageClick (event) {
         bestProducts.push(id);
       }
     }
-    setProductData('product',allProducts);
-    
     render();
   } else {
     alert('Thank You for your input');
+    // all();
     endOfSurvey();
-    gameStart()
+    setProductData('results',allProducts);
     chartResults();
   }
 
+  console.log('best' + bestProducts);
 
-  console.log(gameStart());
-  console.log(fetchProductData('product'));
 }
+
 
 
 if (totalClicks < 25) {
@@ -126,38 +125,12 @@ if (totalClicks < 25) {
   two.addEventListener('click',handleImageClick);
   three.addEventListener('click',handleImageClick);
   render();
-  // gameStart();
 } else {
   prompt('again?');
   if(prompt === 'yes') {
     totalClicks -= 25;
   }
 }
-
-//Game starts
-
-//If there is data in the localStorage, push that into your products array
-
-function gameStart() {
-
-  var storageData = fetchProductData('product');
-
-  if (storageData.length > 0){
-
-    for(var i = 0; i < storageData.length;i++) {
-      var existingProduct = new Product(storageData[i].name, storageData[i].image);
-    }
-    existingProduct.timesClicked += storageData.timesClicked;
-    existingProduct.timesrendered += storageData.timesrendered;
-    // storageData[0].timesClicked;
-  } else {
-    return allProducts
-  }
-
-}
-
-//If there isn't, write products as normal.
-
 
 // function removeDuplicates(arr) {
 //   var result = [];
@@ -176,30 +149,26 @@ function gameStart() {
 // }
 
 // lists all the products that where clicked on
-// function endOfSurvey () {
-//   let orderedArr = bestProducts.reduce(function(accumulator,currentValue) {
-//     if (accumulator.indexOf(currentValue) === -1 ) {
-//       accumulator.push(currentValue);
-//     }
-//     return accumulator;
-//   }, [] );
-//   for(var i = 0; i < orderedArr.length;i++){
-//     var list = document.createElement('li');
-//     results.appendChild(list);
-//     for(var j = 0; j < allProducts.length;j++){
-//       if(orderedArr[i] === allProducts[j].name) {
-//         list.textContent = (allProducts[j].name + ' had ' + allProducts[j].timesClicked + ' clicks and was shown ' + allProducts[j].timesrendered + ' times.' );
-//       }
-//     }
-//   }
-// }
 function endOfSurvey () {
-  for(var i = 0; i < allProducts.length;i++) {
+  let orderedArr = bestProducts.reduce(function(accumulator,currentValue) {
+    if (accumulator.indexOf(currentValue) === -1 ) {
+      accumulator.push(currentValue);
+    }
+    return accumulator;
+  }, [] );
+  for(var i = 0; i < orderedArr.length;i++){
     var list = document.createElement('li');
     results.appendChild(list);
-    list.textContent = (allProducts[i].name + ' had ' + allProducts[i].timesClicked + ' clicks and was shown ' + allProducts[i].timesrendered + ' times.' );
-
+    for(var j = 0; j < allProducts.length;j++){
+      if(orderedArr[i] === allProducts[j].name) {
+        var productResults = (allProducts[j].name + ' had ' + allProducts[j].timesClicked + ' clicks and was shown ' + allProducts[j].timesrendered + ' times.' );
+        list.textContent = productResults;
+        allProductResults.push(productResults);
+        // setProductData('results',productResults);
+      }
+    }
   }
+  
 }
 
 
@@ -207,6 +176,19 @@ function endOfSurvey () {
 
 
 
+
+
+
+console.log(allProductResults);
+var stayData = fetchProductData ('results');
+if (stayData) {
+  for(var i = 0; i < stayData.length; i++ ) {
+    stayProducts = new Product (stayData[i].name , stayData[i].pathOfImage);
+  }
+  stayProducts.render();
+  console,log(stayProducts)
+}
+console,log(stayProducts)
 // label names for the chart
 function chartNames () {
   var names = [];
